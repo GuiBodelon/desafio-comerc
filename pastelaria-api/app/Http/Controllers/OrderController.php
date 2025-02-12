@@ -1,93 +1,49 @@
 <?php
 
+// app/Http/Controllers/OrderController.php
+
 namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\OrderProduct;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\OrderConfirmation;
-use Illuminate\Validation\ValidationException;
+use App\Mail\OrderCreated;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        return response()->json(Order::with('customer', 'products')->get());
+        return response()->json(Order::all(), 200);
     }
 
-    public function show(Order $order)
+    public function show($id)
     {
-        return response()->json($order->load('customer', 'products'));
+        $order = Order::findOrFail($id);
+        return response()->json($order, 200);
     }
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'customer_id' => 'required|exists:customers,id',
-                'products' => 'required|array',
-                'products.*.id' => 'required|exists:products,id',
-                'products.*.quantity' => 'required|integer|min:1',
-            ]);
-
-            $order = Order::create(['customer_id' => $validated['customer_id']]);
-
-            foreach ($validated['products'] as $productData) {
-                $product = Product::find($productData['id']);
-                OrderProduct::create([
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'quantity' => $productData['quantity'],
-                    'price' => $product->price,
-                ]);
-            }
-
-            // Enviar e-mail para o cliente
-            Mail::to($order->customer->email)->send(new OrderConfirmation($order));
-
-            return response()->json($order->load('products'), 201);
-        } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        }
-    }
-
-    public function update(Request $request, Order $order)
-    {
-        $validated = $request->validate([
-            'customer_id' => 'sometimes|exists:customers,id',
-            'products' => 'sometimes|array',
-            'products.*.id' => 'required_with:products|exists:products,id',
-            'products.*.quantity' => 'required_with:products|integer|min:1',
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'product_id' => 'required|exists:products,id',
         ]);
 
-        if (isset($validated['customer_id'])) {
-            $order->customer_id = $validated['customer_id'];
-        }
+        $order = Order::create($request->all());
 
-        $order->save();
+        // Send email to the customer after order creation
+        $customer = Customer::findOrFail($request->customer_id);
+        Mail::to($customer->email)->send(new OrderCreated($order));
 
-        if (isset($validated['products'])) {
-            $order->products()->detach();
-
-            foreach ($validated['products'] as $productData) {
-                $product = Product::find($productData['id']);
-                OrderProduct::create([
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'quantity' => $productData['quantity'],
-                    'price' => $product->price,
-                ]);
-            }
-        }
-
-        return response()->json($order->load('products'));
+        return response()->json($order, 201);
     }
 
-    public function destroy(Order $order)
+    public function destroy($id)
     {
+        $order = Order::findOrFail($id);
         $order->delete();
-        return response()->json(['message' => 'Order deleted'], 200);
+        return response()->json(null, 204);
     }
 }

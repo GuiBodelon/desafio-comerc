@@ -10,17 +10,17 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['customer_id'];
+    protected $fillable = [
+        'customer_id', 'product_id',
+    ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function products()
+    public function product()
     {
-        return $this->belongsToMany(Product::class, 'order_products')
-            ->withPivot('quantity', 'price')
-            ->withTimestamps();
+        return $this->belongsTo(Product::class);
     }
 }

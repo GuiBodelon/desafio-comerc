@@ -4,58 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return response()->json(Product::all());
+        return response()->json(Product::all(), 200);
     }
 
-    public function show(Product $product)
+    public function show($id)
     {
-        return response()->json($product);
+        $product = Product::findOrFail($id);
+        return response()->json($product, 200);
     }
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'price' => 'required|numeric|min:0',
-                'photo' => 'required|url', // URL da imagem
-                'type' => 'required|in:salgado,doce,bebida',
-            ]);
-
-            $product = Product::create($validated);
-
-            return response()->json($product, 201);
-        } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        }
-    }
-
-    public function update(Request $request, Product $product)
-    {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'price' => 'sometimes|numeric|min:0',
-            'photo' => 'sometimes|url',
-            'type' => 'sometimes|in:salgado,doce,bebida',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'photo' => 'required|url',
         ]);
 
-        $product->update($validated);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-        return response()->json($product);
+        $product = Product::create($request->all());
+        return response()->json($product, 201);
     }
 
-    public function destroy(Product $product)
+    public function update(Request $request, $id)
     {
+        $product = Product::findOrFail($id);
+        $product->update($request->all());
+        return response()->json($product, 200);
+    }
+
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
         $product->delete();
-        return response()->json(['message' => 'Product deleted'], 200);
+        return response()->json(null, 204);
     }
 }

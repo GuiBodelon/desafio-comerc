@@ -2,96 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Customer;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return response()->json(Customer::all());
+        return response()->json(Customer::all(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return response()->json($customer, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:customers,email',
-                'phone' => 'nullable|string',
-                'birth_date' => 'nullable|date',
-                'address' => 'nullable|string',
-                'complement' => 'nullable|string',
-                'neighborhood' => 'nullable|string',
-                'zip_code' => 'nullable|string',
-            ]);
-
-            $customer = Customer::create($validated);
-
-            return response()->json($customer, 201);
-        } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Customer $customer)
-    {
-        return response()->json($customer);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Customer $customer)
-    {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:customers,email,' . $customer->id,
-            'phone' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'address' => 'nullable|string',
-            'complement' => 'nullable|string',
-            'neighborhood' => 'nullable|string',
-            'zip_code' => 'nullable|string',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:customers,email',
+            'phone' => 'required|string',
+            'birth_date' => 'required|date',
+            'address' => 'required|string',
+            'neighborhood' => 'required|string',
+            'zip_code' => 'required|string',
         ]);
 
-        $customer->update($validated);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-        return response()->json($customer);
+        $customer = Customer::create($request->all());
+        return response()->json($customer, 201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
+    public function update(Request $request, $id)
     {
+        $customer = Customer::findOrFail($id);
+        $customer->update($request->all());
+        return response()->json($customer, 200);
+    }
+
+    public function destroy($id)
+    {
+        $customer = Customer::findOrFail($id);
         $customer->delete();
-        return response()->json(['message' => 'Customer deleted'], 200);
+        return response()->json(null, 204);
     }
 }
