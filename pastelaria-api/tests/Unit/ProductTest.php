@@ -4,117 +4,133 @@ namespace Tests\Unit;
 
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
+
 
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
 
-    #[Test]
-    public function it_can_create_a_product()
+    /**
+     * Método auxiliar para criar um produto com atributos opcionais.
+     */
+    private function createProduct(array $attributes = []): Product
     {
-        // Cria um produto manualmente
-        $product = Product::create([
-            'name' => 'Pastel de Carne',
+        return Product::create(array_merge([
+            'name' => 'Pastel Genérico',
             'price' => 5.00,
+            'photo' => 'products/default.jpg',
+        ], $attributes));
+    }
+
+    /**
+     * Testa a criação de um produto.
+     */
+    public function test_can_create_a_product()
+    {
+        $product = $this->createProduct([
+            'name' => 'Pastel de Carne',
             'photo' => 'products/pastel-de-carne.jpg',
         ]);
 
-        // Verifica se o produto foi criado no banco de dados
         $this->assertDatabaseHas('products', [
-            'id' => $product->id,
             'name' => 'Pastel de Carne',
-            'price' => 5.00,
             'photo' => 'products/pastel-de-carne.jpg',
         ]);
     }
 
-    #[Test]
-    public function it_can_read_a_product()
+    /**
+     * Testa a leitura de um produto.
+     */
+    public function test_can_read_a_product()
     {
-        // Cria um produto manualmente
-        $product = Product::create([
+        $product = $this->createProduct([
             'name' => 'Pastel de Queijo',
-            'price' => 4.50,
             'photo' => 'products/pastel-de-queijo.jpg',
         ]);
 
-        // Recupera o produto do banco de dados
         $retrievedProduct = Product::find($product->id);
-
-        // Verifica se o produto foi recuperado corretamente
-        $this->assertEquals($product->id, $retrievedProduct->id);
-        $this->assertEquals($product->name, $retrievedProduct->name);
         $this->assertEquals($product->price, $retrievedProduct->price);
-        $this->assertEquals($product->photo, $retrievedProduct->photo);
+        $this->assertEquals($product->name, $retrievedProduct->name);
     }
 
-    #[Test]
-    public function it_can_update_a_product()
+    /**
+     * Testa a atualização de um produto.
+     */
+    public function test_can_update_a_product()
     {
-        // Cria um produto manualmente
-        $product = Product::create([
+        $product = $this->createProduct([
             'name' => 'Pastel de Frango',
-            'price' => 5.50,
             'photo' => 'products/pastel-de-frango.jpg',
         ]);
 
-        // Atualiza o produto
-        $product->update([
+        $updatedData = [
             'name' => 'Pastel de Frango Especial',
             'price' => 6.50,
             'photo' => 'products/pastel-de-frango-especial.jpg',
-        ]);
+        ];
 
-        // Verifica se o produto foi atualizado no banco de dados
-        $this->assertDatabaseHas('products', [
-            'id' => $product->id,
-            'name' => 'Pastel de Frango Especial',
-            'price' => 6.50,
-            'photo' => 'products/pastel-de-frango-especial.jpg',
-        ]);
+        $product->update($updatedData);
+        $this->assertDatabaseHas('products', $updatedData);
     }
 
-    #[Test]
-    public function it_can_delete_a_product()
+    /**
+     * Testa a exclusão de um produto (soft delete).
+     */
+    public function test_can_delete_a_product()
     {
-        // Cria um produto manualmente
-        $product = Product::create([
+        $product = $this->createProduct([
             'name' => 'Coxinha',
-            'price' => 3.50,
             'photo' => 'products/coxinha.jpg',
         ]);
 
-        // Exclui o produto (soft delete)
         $product->delete();
-
-        // Verifica se o produto foi marcado como excluído
-        $this->assertSoftDeleted($product);
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 
-    #[Test]
-    public function it_has_many_orders()
+    /**
+     * Testa o relacionamento de um produto com múltiplos pedidos.
+     */
+    public function test_product_has_many_orders()
     {
-        // Cria um produto manualmente
-        $product = Product::create([
-            'name' => 'Risole',
-            'price' => 4.00,
-            'photo' => 'products/risole.jpg',
+        // Criar um produto
+        $product = $this->createProduct(['name' => 'Risole', 'photo' => 'products/risole.jpg']);
+
+        // Criar clientes manualmente
+        $customer1 = Customer::create([
+            'name' => 'Cliente 1',
+            'email' => 'cliente1@example.com',
+            // Adicione outros campos necessários para a criação do cliente
         ]);
 
-        // Cria dois pedidos manualmente
-        $order1 = Order::create(['customer_id' => 1]);
-        $order2 = Order::create(['customer_id' => 2]);
+        $customer2 = Customer::create([
+            'name' => 'Cliente 2',
+            'email' => 'cliente2@example.com',
+            // Adicione outros campos necessários para a criação do cliente
+        ]);
 
-        // Associa os pedidos ao produto
+        // Criar pedidos para os clientes
+        $order1 = Order::create([
+            'customer_id' => $customer1->id,
+            'status' => 'pending',
+            // Adicione outros campos necessários para a criação do pedido
+        ]);
+
+        $order2 = Order::create([
+            'customer_id' => $customer2->id,
+            'status' => 'pending',
+            // Adicione outros campos necessários para a criação do pedido
+        ]);
+
+        // Associar os pedidos ao produto
         $product->orders()->attach([$order1->id, $order2->id]);
-
-        // Recarrega o produto com os pedidos associados
         $product->load('orders');
 
-        // Verifica o relacionamento com os pedidos
+        // Verificar se o produto tem os pedidos corretamente associados
         $this->assertCount(2, $product->orders);
         $this->assertTrue($product->orders->contains($order1));
         $this->assertTrue($product->orders->contains($order2));

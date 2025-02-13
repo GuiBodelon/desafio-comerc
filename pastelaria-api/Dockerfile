@@ -14,6 +14,9 @@ WORKDIR /var/www
 # Copiar os arquivos da aplicação Laravel
 COPY . .
 
+# Copiar variáveis do .env da raiz para o .env dentro de pasteleria-api
+COPY .env ./pastelaria-api/.env
+
 # Expôr a porta 9000 para o PHP-FPM
 EXPOSE 9000
 

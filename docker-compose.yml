@@ -13,7 +13,10 @@ services:
     depends_on:
       - db
     expose:
-      - "9000"  # Expondo a porta interna do PHP-FPM
+      - "9000"
+    environment:
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG}
 
   # Serviço para o banco de dados MySQL - Banco de dados de produção
   db:
@@ -21,8 +24,8 @@ services:
     container_name: pastelaria-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: pastelaria_prod
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -34,8 +37,8 @@ services:
     container_name: pastelaria-db-test
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: pastelaria_test  # Banco de dados de teste
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE_TEST}
     volumes:
       - db_test_data:/var/lib/mysql
     networks:
@@ -51,7 +54,7 @@ services:
       - ./pastelaria-api:/var/www
       #- ./frontend:/var/www/frontent
     ports:
-      - "8000:80"  # Servindo na porta 80
+      - "8000:${NGINX_PORT}"  # Servindo na porta 80
     depends_on:
       - app
     networks:

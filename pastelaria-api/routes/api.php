@@ -34,6 +34,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductController::class);
     Route::apiResource('orders', OrderController::class);
 });
-
-// Exemplo de rota para enviar e-mail após pedido
-Route::post('orders/{order}/send-email', [OrderController::class, 'sendEmail'])->name('orders.sendEmail');
