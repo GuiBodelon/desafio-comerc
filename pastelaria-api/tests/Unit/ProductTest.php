@@ -19,7 +19,7 @@ class ProductTest extends TestCase
         $product = Product::create([
             'name' => 'Pastel de Carne',
             'price' => 5.00,
-            'photo' => 'images/products/pastel-de-carne.jpg',
+            'photo' => 'products/pastel-de-carne.jpg',
         ]);
 
         // Verifica se o produto foi criado no banco de dados
@@ -27,7 +27,7 @@ class ProductTest extends TestCase
             'id' => $product->id,
             'name' => 'Pastel de Carne',
             'price' => 5.00,
-            'photo' => 'images/products/pastel-de-carne.jpg',
+            'photo' => 'products/pastel-de-carne.jpg',
         ]);
     }
 
@@ -38,7 +38,7 @@ class ProductTest extends TestCase
         $product = Product::create([
             'name' => 'Pastel de Queijo',
             'price' => 4.50,
-            'photo' => 'images/products/pastel-de-queijo.jpg',
+            'photo' => 'products/pastel-de-queijo.jpg',
         ]);
 
         // Recupera o produto do banco de dados
@@ -58,14 +58,14 @@ class ProductTest extends TestCase
         $product = Product::create([
             'name' => 'Pastel de Frango',
             'price' => 5.50,
-            'photo' => 'images/products/pastel-de-frango.jpg',
+            'photo' => 'products/pastel-de-frango.jpg',
         ]);
 
         // Atualiza o produto
         $product->update([
             'name' => 'Pastel de Frango Especial',
             'price' => 6.50,
-            'photo' => 'images/products/pastel-de-frango-especial.jpg',
+            'photo' => 'products/pastel-de-frango-especial.jpg',
         ]);
 
         // Verifica se o produto foi atualizado no banco de dados
@@ -73,7 +73,7 @@ class ProductTest extends TestCase
             'id' => $product->id,
             'name' => 'Pastel de Frango Especial',
             'price' => 6.50,
-            'photo' => 'images/products/pastel-de-frango-especial.jpg',
+            'photo' => 'products/pastel-de-frango-especial.jpg',
         ]);
     }
 
@@ -84,7 +84,7 @@ class ProductTest extends TestCase
         $product = Product::create([
             'name' => 'Coxinha',
             'price' => 3.50,
-            'photo' => 'images/products/coxinha.jpg',
+            'photo' => 'products/coxinha.jpg',
         ]);
 
         // Exclui o produto (soft delete)
@@ -101,7 +101,7 @@ class ProductTest extends TestCase
         $product = Product::create([
             'name' => 'Risole',
             'price' => 4.00,
-            'photo' => 'images/products/risole.jpg',
+            'photo' => 'products/risole.jpg',
         ]);
 
         // Cria dois pedidos manualmente

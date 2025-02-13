@@ -8,7 +8,7 @@ class ProductRequest extends FormRequest
 {
     public function authorize()
     {
-        return true; // Ajuste conforme necessidade
+        return true;
     }
 
     public function rules()
@@ -16,7 +16,7 @@ class ProductRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'photo' => 'required|url',
+            'photo' => $this->isMethod('post') ? 'required|image|mimes:jpeg,png,jpg,gif|max:2048' : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }
