@@ -2,27 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $data = $this->authService->register($request->validated());
+
+        return response()->json([
+            'user' => $data['user'],
+            'token' => $data['token']
+        ], 201);
+    }
+
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $data = $this->authService->login($request->only(['email', 'password']));
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            // Gerar token
-            $token = $user->createToken('pastelaria')->plainTextToken;
-            return response()->json(['token' => $token]);
+        if (!$data) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json([
+            'user' => $data['user'],
+            'token' => $data['token']
+        ]);
     }
 }

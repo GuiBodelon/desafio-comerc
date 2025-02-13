@@ -11,11 +11,13 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'price', 'photo',
+        'name',
+        'price',
+        'photo',
     ];
 
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsToMany(Order::class, 'order_product');
     }
 }

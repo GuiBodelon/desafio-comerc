@@ -2,50 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\ProductRequest;
+use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
-    public function index()
+    protected $productService;
+
+    public function __construct(ProductService $productService)
     {
-        return response()->json(Product::all(), 200);
+        $this->productService = $productService;
     }
 
-    public function show($id)
+    public function index(): JsonResponse
     {
-        $product = Product::findOrFail($id);
-        return response()->json($product, 200);
+        return response()->json($this->productService->getAllProducts(), 200);
     }
 
-    public function store(Request $request)
+    public function show($id): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'photo' => 'required|url',
-        ]);
+        return response()->json($this->productService->getProductById($id), 200);
+    }
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $product = Product::create($request->all());
+    public function store(ProductRequest $request): JsonResponse
+    {
+        $product = $this->productService->createProduct($request->validated());
         return response()->json($product, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id): JsonResponse
     {
-        $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $product = $this->productService->updateProduct($id, $request->validated());
         return response()->json($product, 200);
     }
 
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        $this->productService->deleteProduct($id);
         return response()->json(null, 204);
     }
 }

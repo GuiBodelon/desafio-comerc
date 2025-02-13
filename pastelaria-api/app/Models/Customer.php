@@ -1,7 +1,5 @@
 <?php
 
-// app/Models/Customer.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +12,10 @@ class Customer extends Model
 
     protected $fillable = [
         'name', 'email', 'phone', 'birth_date', 'address', 'complement', 'neighborhood', 'zip_code',
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
     ];
 
     public function orders()

@@ -1,49 +1,42 @@
 <?php
 
-// app/Http/Controllers/OrderController.php
-
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OrderRequest;
 use App\Models\Order;
-use App\Models\Product;
-use App\Models\Customer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OrderCreated;
+use App\Services\OrderService;
+use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
-    public function index()
+    protected $orderService;
+
+    public function __construct(OrderService $orderService)
     {
-        return response()->json(Order::all(), 200);
+        $this->orderService = $orderService;
     }
 
-    public function show($id)
+    public function index(): JsonResponse
     {
-        $order = Order::findOrFail($id);
+        return response()->json(Order::with(['customer', 'product'])->get(), 200);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $order = Order::with(['customer', 'product'])->findOrFail($id);
         return response()->json($order, 200);
     }
 
-    public function store(Request $request)
+    public function store(OrderRequest $request): JsonResponse
     {
-        $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'product_id' => 'required|exists:products,id',
-        ]);
-
-        $order = Order::create($request->all());
-
-        // Send email to the customer after order creation
-        $customer = Customer::findOrFail($request->customer_id);
-        Mail::to($customer->email)->send(new OrderCreated($order));
-
+        $order = $this->orderService->createOrder($request->validated());
         return response()->json($order, 201);
     }
 
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $order = Order::findOrFail($id);
-        $order->delete();
+        $this->orderService->deleteOrder($order);
         return response()->json(null, 204);
     }
 }
