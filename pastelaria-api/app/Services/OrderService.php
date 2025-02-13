@@ -11,11 +11,29 @@ class OrderService
 {
     public function createOrder(array $data)
     {
-        $order = Order::create($data);
+        // Cria o pedido apenas com o customer_id
+        $order = Order::create([
+            'customer_id' => $data['customer_id']
+        ]);
+
+        // Se produto(s) foram enviados, associa-os ao pedido
+        if (isset($data['product_id'])) {
+            // Se for um único ID ou um array, o attach funciona para ambos
+            $order->products()->attach($data['product_id']);
+        }
 
         // Enviar e-mail para o cliente após a criação do pedido
         $customer = Customer::findOrFail($data['customer_id']);
         Mail::to($customer->email)->send(new OrderCreated($order));
+
+        return $order;
+    }
+
+    public function updateOrder(Order $order, array $data)
+    {
+        if (isset($data['product_id'])) {
+            $order->products()->sync($data['product_id']);
+        }
 
         return $order;
     }
