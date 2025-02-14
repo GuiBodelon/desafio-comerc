@@ -28,7 +28,7 @@ class ProductService
      */
     public function createProduct(array $data)
     {
-        if (isset($data['photo'])) {
+        if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
             $data['photo'] = $this->storeImage($data['photo'], $data['name']);
         }
 
@@ -42,10 +42,9 @@ class ProductService
     {
         $product = Product::findOrFail($id);
 
-        if (isset($data['photo'])) {
+        if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
             // Remover imagem antiga antes de salvar a nova
             $this->deleteImage($product->photo);
-
             $data['photo'] = $this->storeImage($data['photo'], $data['name']);
         }
 

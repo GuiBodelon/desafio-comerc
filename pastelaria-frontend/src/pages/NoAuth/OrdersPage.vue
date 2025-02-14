@@ -16,7 +16,7 @@
           <q-card-section>
             <div class="row items-center">
               <div class="col-2">
-                <img :src="`http://127.0.0.1:8080/storage/${product.photo}`" alt="Product" class="q-mb-md"
+                <img :src="`http://127.0.0.1:8080/storage/${product.photo}`" alt="Product" class="q-mb-md photoBox"
                   style="width: 100%; height: auto;">
               </div>
               <div class="col-10 q-pl-md">
@@ -296,5 +296,10 @@ onMounted(async () => {
 .products {
   max-height: 75vh;
   overflow-y: scroll;
+}
+
+.photoBox {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  border-radius: 10px;
 }
 </style>

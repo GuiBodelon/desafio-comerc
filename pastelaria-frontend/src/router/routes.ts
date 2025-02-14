@@ -32,22 +32,18 @@ const routes: RouteRecordRaw[] = [
         name: 'Clientes',
         component: () => import('pages/ClientsPage.vue'),
       },
+      {
+        path: '/produtos',
+        name: 'Produtos',
+        component: () => import('pages/ProductsPage.vue'),
+      },
       /*
       {
-        path: 'produtos',
-        name: 'Produtos',
-        component: () => import('pages/ProdutosPage.vue'),
-      },
-      {
-        path: 'pedidos',
+        path: '/pedidos',
         name: 'Pedidos',
-        component: () => import('pages/PedidosPage.vue'),
+        component: () => import('pages/OrdersPage.vue'),
       },
-      {
-        path: 'relatorios',
-        name: 'Relatorios',
-        component: () => import('pages/RelatoriosPage.vue'),
-      },*/
+      */
     ],
   },
   {
