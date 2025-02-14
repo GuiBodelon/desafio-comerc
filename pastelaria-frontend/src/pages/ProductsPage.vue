@@ -58,8 +58,9 @@
             <q-input v-model="productData.name" label="Nome" required />
             <q-input v-model="productData.price" label="Preço" type="text" required mask="#,##" fill-mask="0"
               reverse-fill-mask />
-            <q-file v-model="productData.photo" label="Selecione a Foto" max-file-size="2048" counter
-              accept=".jpg, image/*" />
+            <q-file v-model="productData.photo" label="Selecione a Foto" :max-file-size="2 * 1024 * 1024" counter
+              accept=".jpg, image/*" @added="onFileAdded" @rejected="onRejected" />
+
             <q-separator spaced inset dark horizontal />
             <div v-if="photoPath" class="text-h6">Imagem do Produto:</div>
             <div v-if="photoPath" class="flex justify-center">
@@ -99,7 +100,8 @@ import { ref, reactive, onMounted } from 'vue';
 import { showSuccessNotification, showErrorNotification, notificationHourglass, removeNotification } from 'src/services/notificationService';
 import { fetchProducts, createProduct, updateProduct, deleteProduct as deleteProductService } from 'src/services/productsService';
 import type { Product } from 'src/components/models';
-import type { QTableProps } from 'quasar';
+import type { QRejectedEntry, QTableProps } from 'quasar';
+import { Notify } from 'quasar'
 
 // Estado do componente
 const products = ref<Product[]>([]);
@@ -111,6 +113,24 @@ const loadingSubmit = ref(false);
 const dialogOpen = ref(false);
 const isEditing = ref(false);
 const photoPath = ref('');
+
+const onFileAdded = (files: File[]) => {
+  if (files.length > 0) {
+    const file = files[0];
+    productData.photo = file || null;
+  }
+};
+
+const onRejected = (rejectedEntries: QRejectedEntry[]) => {
+  const largeFiles = rejectedEntries.filter(entry => entry.file && entry.file.size > 2048 * 1024); // 2MB em bytes
+  if (largeFiles.length > 0) {
+    Notify.create({
+      type: 'negative',
+      message: `${largeFiles.length} arquivo(s) muito grande(s), máximo permitido: 2MB`
+    });
+  }
+};
+
 const productData = reactive({
   id: 0,
   name: '',
@@ -195,57 +215,57 @@ const parsePrice = (price: string) => {
 
 // Função para enviar o formulário
 const handleSubmit = async () => {
-  loadingSubmit.value = true
+  loadingSubmit.value = true;
 
   // Formatando o nome do produto
   productData.name = formatProductName(productData.name)
 
   // Formatando o preço para envio ao banco (sem formato de moeda)
-  const formattedPrice = parsePrice(productData.price.toString())
+  const formattedPrice = parsePrice(productData.price.toString());
 
   // Verificando se os campos estão corretos
   if (!productData.name || !formattedPrice || !productData.photo) {
-    showErrorNotification('Por favor, preencha todos os campos obrigatórios.')
-    loadingSubmit.value = false
-    return
+    showErrorNotification('Por favor, preencha todos os campos obrigatórios.');
+    loadingSubmit.value = false;
+    return;
   }
 
-  const formData = new FormData()
-  formData.append('name', productData.name)
-  formData.append('price', formattedPrice.toString())
+  const formData = new FormData();
+  formData.append('name', productData.name);
+  formData.append('price', formattedPrice.toString());
 
   if (productData.photo) {
-    formData.append('photo', productData.photo)
+    formData.append('photo', productData.photo);
   }
 
   // Adicionando o _method apenas se for uma operação de atualização (PUT)
   if (isEditing.value) {
-    formData.append('_method', 'PUT')
+    formData.append('_method', 'PUT');
   }
 
   try {
-    const notification = notificationHourglass(isEditing.value ? 'Atualizando produto...' : 'Criando produto...')
+    const notification = notificationHourglass(isEditing.value ? 'Atualizando produto...' : 'Criando produto...');
 
     // Realizando a operação de atualização ou criação
     if (isEditing.value) {
-      await updateProduct(productData.id, formData)
+      await updateProduct(productData.id, formData);
     } else {
-      await createProduct(formData)
+      await createProduct(formData);
     }
 
-    removeNotification(notification)
-    showSuccessNotification(isEditing.value ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!')
+    removeNotification(notification);
+    showSuccessNotification(isEditing.value ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
 
     // Recarregar lista de produtos ou fechar o formulário
-    await loadProducts() // Certifique-se de implementar a função loadProducts
-    closeDialog() // Fechar o modal ou formulário
+    await loadProducts(); // Certifique-se de implementar a função loadProducts
+    closeDialog(); // Fechar o modal ou formulário
   } catch (error) {
-    console.log(error)
-    showErrorNotification(isEditing.value ? 'Erro ao atualizar produto' : 'Erro ao criar produto')
+    console.log(error);
+    showErrorNotification(isEditing.value ? 'Erro ao atualizar produto' : 'Erro ao criar produto');
   } finally {
-    loadingSubmit.value = false
+    loadingSubmit.value = false;
   }
-}
+};
 
 // Função para deletar um produto
 const deleteProduct = async (id: number) => {
