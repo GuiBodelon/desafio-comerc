@@ -1,8 +1,9 @@
 <template>
   <q-page class="bg-dark row justify-center items-center">
-    <div class="authBox shadow-3 bg-white text-center">
-      <div class="col-12 flex justify-center q-pa-xl bg-dark">
-        <q-img src="logo.webp" class="logo" />
+    <div class="authBox shadow-4 bg-white text-center q-pa-none q-ma-none">
+      <div class="col-12 flex column justify-center items-center q-pa-sm">
+        <q-img src="logo-pastel.png" class="logoPastel" />
+        <div class="text-h4">Pastelaria</div>
       </div>
 
       <!-- Alterna entre Login e Registro -->
@@ -22,6 +23,9 @@
         <div v-else>
           Já possui uma conta? <span @click="toggleForm" class="cursor-pointer">Faça login</span>
         </div>
+      </div>
+      <div class="col-12 flex column justify-center items-center bg-dark q-pa-lg text-center">
+        <q-img src="logo.webp" class="logoComerc" />
       </div>
     </div>
   </q-page>
@@ -44,9 +48,14 @@ const toggleForm = () => {
   width: 90vw;
   min-width: 35vw;
   max-width: 500px;
-  border-radius: 6px;
+  border-radius: 10px;
 
-  .logo {
+  .logoPastel {
+    width: 100%;
+    max-width: 150px;
+  }
+
+  .logoComerc {
     width: 100%;
     max-width: 150px;
   }

@@ -251,11 +251,16 @@ const findCustomerByEmail = async () => {
 const submitOrder = async (customerData: Customer) => {
   try {
     const notification = notificationHourglass('Finalizando o pedido...');
-    // Monta o pedido com os IDs dos produtos no carrinho
+
+    // Monta o pedido com os IDs dos produtos e suas respectivas quantidades
     const orderData = {
       customer_id: customerData.id,
-      product_id: cart.value.map(item => item.id) // Extraímos apenas os IDs dos produtos
+      products: cart.value.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity
+      }))
     };
+
     await orderService.submitOrder(orderData);
     removeNotification(notification);
     showSuccessNotification('Pedido realizado com sucesso!');
@@ -264,6 +269,7 @@ const submitOrder = async (customerData: Customer) => {
     console.error(error);
   }
 };
+
 
 const handleSubmit = async () => {
   loadingSubmit.value = true;

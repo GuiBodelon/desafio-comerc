@@ -23,14 +23,10 @@ class OrderSeeder extends Seeder
 
         $product1 = \App\Models\Product::find(1); // Pastel de Carne
         $product2 = \App\Models\Product::find(2); // Pastel de Queijo
-        $product3 = \App\Models\Product::find(3); // Pastel de Frango
-        $product4 = \App\Models\Product::find(4); // Coxinha
-        $product5 = \App\Models\Product::find(5); // Risole
-        $product6 = \App\Models\Product::find(6); // Empada de Frango
-        $product7 = \App\Models\Product::find(7); // Torta de Palmito
-        $product8 = \App\Models\Product::find(8); // Churros
-        $product9 = \App\Models\Product::find(9); // Bauru
-        $product10 = \App\Models\Product::find(10); // Salgado de Queijo
+        $product3 = \App\Models\Product::find(3); // Pastel de Calabresa
+        $product4 = \App\Models\Product::find(4); // Pastel de Pizza
+        $product5 = \App\Models\Product::find(5); // Pastel de Frango
+        $product6 = \App\Models\Product::find(6); // Caldo de Cana 1L
 
         $order1 = Order::create(['customer_id' => $customer1->id]);
         $order1->products()->attach([$product1->id, $product2->id]);

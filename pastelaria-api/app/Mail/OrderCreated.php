@@ -20,7 +20,7 @@ class OrderCreated extends Mailable
 
     public function build()
     {
-        return $this->subject('Pedido Criado')
-            ->view('emails.orders.created');
+        return $this->subject('Pedido Criado com Sucesso!')
+                    ->view('emails.order_created');  // O caminho para a view do e-mail
     }
 }

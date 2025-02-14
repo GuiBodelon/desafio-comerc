@@ -6,27 +6,42 @@ use App\Models\Order;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderCreated;
+use Illuminate\Http\Request;
+use App\Models\Product;
 
 class OrderService
 {
-    public function createOrder(array $data)
+    public function createOrder(Request $request)
     {
-        // Cria o pedido apenas com o customer_id
-        $order = Order::create([
-            'customer_id' => $data['customer_id']
+        // Validação para garantir que 'products' é um array de objetos com 'product_id' e 'quantity'
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customers,id',  // Verifica se o cliente existe
+            'products' => 'required|array',  // Certifica que 'products' é um array
+            'products.*.product_id' => 'required|exists:products,id',  // Verifica se o product_id existe
+            'products.*.quantity' => 'required|integer|min:1',  // Verifica se a quantidade é válida
         ]);
 
-        // Se produto(s) foram enviados, associa-os ao pedido
-        if (isset($data['product_id'])) {
-            // Se for um único ID ou um array, o attach funciona para ambos
-            $order->products()->attach($data['product_id']);
+        // Criação do pedido
+        $order = Order::create([
+            'customer_id' => $request->customer_id,  // Definindo o cliente
+        ]);
+
+        // Associar produtos ao pedido com a quantidade
+        foreach ($request->products as $product) {
+            // Verifica se o produto existe e a quantidade está sendo enviada corretamente
+            $order->products()->attach($product['product_id'], [
+                'quantity' => $product['quantity'], // Associando a quantidade
+            ]);
         }
 
-        // Enviar e-mail para o cliente após a criação do pedido
-        $customer = Customer::findOrFail($data['customer_id']);
-        Mail::to($customer->email)->send(new OrderCreated($order));
+        // Envio de e-mail
+        Mail::to($order->customer->email)->send(new OrderCreated($order));
 
-        return $order;
+        // Retorna uma resposta com o ID do pedido
+        return response()->json([
+            'message' => 'Pedido criado com sucesso',
+            'order_id' => $order->id,
+        ], 200);
     }
 
     public function updateOrder(Order $order, array $data)

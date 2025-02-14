@@ -27,6 +27,13 @@ class Order extends BaseModel
      */
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'order_product');
+        return $this->belongsToMany(Product::class, 'order_product')->withPivot('quantity');
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->products->sum(function ($product) {
+            return $product->pivot->quantity * $product->price;
+        });
     }
 }

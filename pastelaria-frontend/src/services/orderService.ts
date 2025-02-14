@@ -44,7 +44,7 @@ export const orderService = {
   },
 
   // Criar ou buscar cliente e enviar pedido
-  async createOrder(email: string, productIds: number[]) {
+  async createOrder(email: string, productData: { id: number; quantity: number }[]) {
     try {
       // Buscar o cliente pelo email
       let customer = await this.findCustomer(email)
@@ -65,10 +65,16 @@ export const orderService = {
         customer = await this.createCustomer(customerData)
       }
 
-      // Enviar o pedido
+      // Montar os produtos com suas quantidades
+      const products = productData.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity,
+      }))
+
+      // Enviar o pedido com produtos e suas quantidades
       const orderData = {
         customer_id: customer.id, // Associando o cliente encontrado ou criado
-        product_id: productIds, // Os IDs dos produtos
+        products: products, // Os produtos com suas quantidades
       }
 
       // Chama a função para enviar o pedido

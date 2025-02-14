@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Customer;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -28,23 +29,11 @@ class OrderController extends Controller
         return response()->json($order, 200);
     }
 
-    public function store(OrderRequest $request): JsonResponse
+    public function store(Request $request)
     {
-        $order = $this->orderService->createOrder($request->validated());
-        return response()->json($order, 201);
+        $orderService = new OrderService();
+        return $orderService->createOrder($request); // Passando o objeto Request
     }
-
-    //Pedido sem autenticação
-    /*public function store(OrderRequest $request): JsonResponse
-    {
-        // Valida se o customer_id existe
-        $customer = Customer::findOrFail($request->input('customer_id'));
-
-        $order = $this->orderService->createOrder($request->validated());
-
-        return response()->json($order, 201);
-    }*/
-
 
     public function update(OrderRequest $request, $id): JsonResponse
     {
