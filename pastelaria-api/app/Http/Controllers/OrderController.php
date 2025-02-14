@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\Customer;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 
@@ -32,6 +33,18 @@ class OrderController extends Controller
         $order = $this->orderService->createOrder($request->validated());
         return response()->json($order, 201);
     }
+
+    //Pedido sem autenticação
+    /*public function store(OrderRequest $request): JsonResponse
+    {
+        // Valida se o customer_id existe
+        $customer = Customer::findOrFail($request->input('customer_id'));
+
+        $order = $this->orderService->createOrder($request->validated());
+
+        return response()->json($order, 201);
+    }*/
+
 
     public function update(OrderRequest $request, $id): JsonResponse
     {

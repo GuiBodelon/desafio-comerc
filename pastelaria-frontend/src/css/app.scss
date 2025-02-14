@@ -1,1 +1,13 @@
 // app global css in SCSS form
+@font-face {
+  font-family: 'Montserrat';
+  src: url('src/css/fonts/Montserrat.ttf') format('truetype');
+}
+
+* {
+  font-family: Montserrat;
+}
+
+.b {
+  border: 1px solid fuchsia;
+}

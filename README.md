@@ -70,7 +70,9 @@ MAIL_FROM_NAME="${APP_NAME}"
 1. **Construir e iniciar os containers:**
    ```sh
    docker-compose up --build -d
-   ou
+   ```
+   Ou
+   ```sh
    docker-compose up --force-recreate -d
    ```
 
@@ -91,7 +93,7 @@ MAIL_FROM_NAME="${APP_NAME}"
 ### 📌 Testando via Postman
 A API está rodando em `http://127.0.0.1:8000/api/`.
 
-- **Importe a coleção Postman:** [https://web.postman.co/workspace/1290e8e5-f6b6-4ffa-8c58-5f28ce1c3846](#)
+- **Importe a coleção Postman:** [Link para a Coleção](https://web.postman.co/workspace/1290e8e5-f6b6-4ffa-8c58-5f28ce1c3846)
 - Utilize os seguintes endpoints para testar as funcionalidades:
   - **Clientes:** `GET /customers`, `POST /customers`, etc.
   - **Produtos:** `GET /products`, `POST /products`, etc.

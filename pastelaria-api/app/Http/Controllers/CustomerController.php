@@ -6,6 +6,7 @@ use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use App\Services\CustomerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -19,6 +20,23 @@ class CustomerController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(Customer::all(), 200);
+    }
+
+    public function findByEmail(Request $request): JsonResponse
+    {
+        // Obtendo o e-mail a partir da requisição
+        $email = $request->input('email'); // ou $request->email
+
+        // Realizando a consulta
+        $customer = Customer::where('email', $email)->first();
+
+        // Verificando se o cliente foi encontrado
+        if (!$customer) {
+            return response()->json(null, 404);
+        }
+
+        // Retornando a resposta com o cliente encontrado
+        return response()->json($customer, 200);
     }
 
     public function show($id): JsonResponse

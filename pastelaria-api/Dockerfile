@@ -17,6 +17,9 @@ COPY . .
 # Copiar variáveis do .env da raiz para o .env dentro de pasteleria-api
 COPY .env ./pastelaria-api/.env
 
+# Criar o link simbólico para o diretório de storage
+RUN php artisan storage:link
+
 # Expôr a porta 9000 para o PHP-FPM
 EXPOSE 9000
 

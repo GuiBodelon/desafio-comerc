@@ -13,24 +13,24 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
 Route::prefix('auth')->group(function () {
-    // Registro de um novo cliente
     Route::post('register', [AuthController::class, 'register']);
-    // Login de um cliente
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout',  [AuthController::class, 'logout']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Recuperar dados do usuário logado
     Route::get('user', function (Request $request) {
         return $request->user();
     });
-
-    // Logout (revogar token)
-    Route::post('logout', [AuthController::class, 'logout']);
 
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('products', ProductController::class);
     Route::apiResource('orders', OrderController::class);
 });
+
+// Rota para criar um pedido sem autenticação
+Route::post('orders', [OrderController::class, 'store']);
+Route::get('products', [ProductController::class, 'index']);
+Route::post('customers', [CustomerController::class, 'store']);
+Route::post('/customers/find', [CustomerController::class, 'findByEmail']);

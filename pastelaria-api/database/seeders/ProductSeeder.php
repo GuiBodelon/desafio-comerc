@@ -26,51 +26,28 @@ class ProductSeeder extends Seeder
         ]);
 
         Product::create([
+            'name' => 'Pastel de Calabresa',
+            'price' => 5.50,
+            'photo' => 'products/pastel-de-calabresa.jpg',
+        ]);
+
+        Product::create([
+            'name' => 'Pastel de Pizza',
+            'price' => 5.50,
+            'photo' => 'products/pastel-de-pizza.jpg',
+        ]);
+
+        Product::create([
             'name' => 'Pastel de Frango',
             'price' => 5.50,
             'photo' => 'products/pastel-de-frango.jpg',
         ]);
 
         Product::create([
-            'name' => 'Coxinha',
-            'price' => 3.50,
-            'photo' => 'products/coxinha.jpg',
+            'name' => 'Caldo de Cana 1L',
+            'price' => 5.50,
+            'photo' => 'products/caldo-de-cana-1l.jpg',
         ]);
 
-        Product::create([
-            'name' => 'Risole',
-            'price' => 4.00,
-            'photo' => 'products/risole.jpg',
-        ]);
-
-        Product::create([
-            'name' => 'Empada de Frango',
-            'price' => 6.00,
-            'photo' => 'products/empada-frango.jpg',
-        ]);
-
-        Product::create([
-            'name' => 'Torta de Palmito',
-            'price' => 8.00,
-            'photo' => 'products/torta-palmito.jpg',
-        ]);
-
-        Product::create([
-            'name' => 'Churros',
-            'price' => 4.00,
-            'photo' => 'products/churros.jpg',
-        ]);
-
-        Product::create([
-            'name' => 'Bauru',
-            'price' => 7.50,
-            'photo' => 'products/bauru.jpg',
-        ]);
-
-        Product::create([
-            'name' => 'Salgado de Queijo',
-            'price' => 3.00,
-            'photo' => 'products/salgado-queijo.jpg',
-        ]);
     }
 }

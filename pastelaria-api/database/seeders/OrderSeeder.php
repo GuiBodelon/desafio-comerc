@@ -42,24 +42,24 @@ class OrderSeeder extends Seeder
         $order3->products()->attach([$product6->id]);
 
         $order4 = Order::create(['customer_id' => $customer4->id]);
-        $order4->products()->attach([$product7->id, $product8->id]);
+        $order4->products()->attach([$product5->id, $product4->id]);
 
         $order5 = Order::create(['customer_id' => $customer5->id]);
-        $order5->products()->attach([$product9->id, $product10->id]);
+        $order5->products()->attach([$product2->id, $product1->id]);
 
         $order6 = Order::create(['customer_id' => $customer1->id]);
-        $order6->products()->attach([$product1->id, $product10->id]);
+        $order6->products()->attach([$product3->id, $product4->id]);
 
         $order7 = Order::create(['customer_id' => $customer2->id]);
-        $order7->products()->attach([$product3->id, $product7->id]);
+        $order7->products()->attach([$product3->id, $product5->id]);
 
         $order8 = Order::create(['customer_id' => $customer3->id]);
         $order8->products()->attach([$product2->id]);
 
         $order9 = Order::create(['customer_id' => $customer4->id]);
-        $order9->products()->attach([$product6->id, $product8->id]);
+        $order9->products()->attach([$product4->id, $product5->id]);
 
         $order10 = Order::create(['customer_id' => $customer5->id]);
-        $order10->products()->attach([$product4->id, $product9->id]);
+        $order10->products()->attach([$product4->id, $product1->id]);
     }
 }
