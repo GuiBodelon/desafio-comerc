@@ -10,7 +10,7 @@ declare module 'vue' {
 }
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
+  baseURL: 'http://127.0.0.1:8080/api/',
   withCredentials: true, // Necessário para Sanctum (cookies de sessão)
 })
 

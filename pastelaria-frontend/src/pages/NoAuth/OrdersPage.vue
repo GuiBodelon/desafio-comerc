@@ -16,12 +16,12 @@
           <q-card-section>
             <div class="row items-center">
               <div class="col-2">
-                <img :src="`http://127.0.0.1:8000/storage/${product.photo}`" alt="Product" class="q-mb-md"
+                <img :src="`http://127.0.0.1:8080/storage/${product.photo}`" alt="Product" class="q-mb-md"
                   style="width: 100%; height: auto;">
               </div>
               <div class="col-10 q-pl-md">
                 <div class="text-h6">{{ product.name }}</div>
-                <div class="text-body2">R$ {{ product.price.toFixed(2) }}</div>
+                <div class="text-body2">R$ {{ Number(product.price).toFixed(2) }}</div>
                 <q-btn @click="addToCart(product)" color="primary" label="Adicionar ao carrinho" class="q-mt-md" />
               </div>
             </div>
