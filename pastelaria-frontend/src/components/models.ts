@@ -25,12 +25,24 @@ export interface Product {
     product_id: number
   }
 }
+// models.ts
 export interface Order {
   id: number
   customer_id: number | null
   created_at: string
   updated_at: string
+  customer_name: string
+  total_price: number
+  status: string
   deleted_at: string | null
-  customer: Customer | null
-  products: Product[]
+  customer: Customer
+  products: ProductWithPivot[]
+}
+
+export interface ProductWithPivot extends Product {
+  pivot: {
+    order_id: number
+    product_id: number
+    quantity: number
+  }
 }

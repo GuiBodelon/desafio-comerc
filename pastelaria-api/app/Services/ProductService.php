@@ -59,9 +59,7 @@ class ProductService
     public function deleteProduct(int $id)
     {
         $product = Product::findOrFail($id);
-
-        $this->deleteImage($product->photo);
-
+        //$this->deleteImage($product->photo);
         $product->delete();
     }
 

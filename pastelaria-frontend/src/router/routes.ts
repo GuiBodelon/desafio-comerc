@@ -37,13 +37,11 @@ const routes: RouteRecordRaw[] = [
         name: 'Produtos',
         component: () => import('pages/ProductsPage.vue'),
       },
-      /*
-      {
-        path: '/pedidos',
+      /*{
+        path: '/pastelaria/pedidos',
         name: 'Pedidos',
         component: () => import('pages/OrdersPage.vue'),
-      },
-      */
+      },*/
     ],
   },
   {
